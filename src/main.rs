@@ -1,3 +1,9 @@
+use std::{env, fs};
+use dirby::Config;
+
 fn main() {
-    println!("Hello, world!");
+    let args: Vec<String> = env::args().collect();
+
+    let config: Config = Config.new(&args).unwrap();
+
 }
