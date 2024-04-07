@@ -8,6 +8,7 @@ pub struct Config {
 trait Tree {
     fn leaves(&self) -> &Vec<String>;
     fn children(&self) -> &Vec<Directory>;
+    fn add(obj: Directory) -> Result<bool, bool>; //maybe change the return type
 }
 ///Object representing a filesystem folder
 pub struct Directory {
@@ -30,9 +31,10 @@ impl Tree for RootDirectory {
     }
 
     fn leaves(&self) -> &Vec<String> {
+        //fn has_child() //add this and find way to do top down directory path construction
         let leaves = Vec::new();
         for child in self.children {
-            
+            //Fill
         }
     }
 }
