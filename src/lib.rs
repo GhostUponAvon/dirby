@@ -1,14 +1,13 @@
-use std::{env, fs, path::Path};
-
+use std::env;
 pub struct Config {
-    pub execution_path: String,
-    pub input_file: String,
-    pub ouput_dir: String,
+    execution_path: String,
+    input_file: String,
+    ouput_dir: String,
 }
 trait Tree {
-    fn leaves(&self) -> &Vec<String>;
-    fn children(&self) -> &Vec<Directory>;
-    fn add(obj: Directory) -> Result<bool, bool>; //maybe change the return type
+    fn has_children(&self) -> Result<usize, &str>;
+    fn get_children(&self) -> &Vec<Directory>;
+    fn add(&mut self, obj: Directory) -> Result<bool, bool>; //maybe change the return type
 }
 ///Object representing a filesystem folder
 pub struct Directory {
@@ -26,28 +25,32 @@ pub struct RootDirectory {
 }
 
 impl Tree for RootDirectory {
-    fn children(&self) -> &Vec<Directory> {
+    fn get_children(&self) -> &Vec<Directory> {
         return &self.children
     }
 
-    fn leaves(&self) -> &Vec<String> {
-        //fn has_child() //add this and find way to do top down directory path construction
-        let leaves = Vec::new();
-        for child in self.children {
-            //Fill
+    fn has_children(&self) -> Result<usize, &str> {
+        if self.children.len() == 0 {
+            Err("no children found")
+        } else {
+            Ok(self.children.len())
         }
     }
-}
 
+    fn add(&mut self, obj: Directory) -> Result<bool, bool> {
+        self.children.push(obj);
+        Ok(true)
+    }
 
-
+    }
 
 impl Config {
     pub fn new(args: &[String]) -> Result<Config, &str> {
         
         let input_file: String = args[1].clone();
         let output_dir: String = args[2].clone();
+        let execution_path: String = env::current_dir().unwrap().display().to_string();
         
-        //FILL
+        Ok(Config {input_file: input_file, ouput_dir: output_dir, execution_path: execution_path})
     }
 } 
