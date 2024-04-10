@@ -1,8 +1,8 @@
 use std::env;
 pub struct Config {
-    execution_path: String,
-    input_file: String,
-    ouput_dir: String,
+    pub execution_path: String,
+    pub input_file: String,
+    pub ouput_dir: String,
 }
 trait Tree {
     fn has_children(&self) -> Result<usize, &str>;
