@@ -1,14 +1,6 @@
-use std::{env, fs, os::windows::process, path::Path};
+use std::{env, fs, process, path::Path};
 use dirby::Config;
-
-#[cfg(target_os = "linux")]
-const INVALID_FS_CHARS: String = String::from("/"); //characters forbidden in a linux folder or file name and for this program.
-
-#[cfg(target_os = "windows")]
-const INVALID_FS_CHARS: String = String::from("<>:\"/\\|?*"); //characters forbidden in a windows folder or file name and for this program.
-
-#[cfg(target_os = "macos")]
-const INVALID_FS_CHARS: String = String::from(":/"); //characters forbidden in a macos folder or file name and for this program.
+mod file_checks;
 
 
 fn main() {
@@ -22,12 +14,12 @@ fn main() {
     //read input file.
     let files_lines: String = fs::read_to_string(config.input_file).expect("Cannot find the specified file. Please check the file name and path.");
     
-    //check that the file is valid
-    if files_lines.contains(|x| is_valid_fs_character(&x)) {
-        //Exit the procces here
-    };
 
+    if !file_checks::is_valid_file(&files_lines) {
+        process::exit(1);
+    }
 
+    
     let file_lines: Vec<String> = files_lines.split('\n').map(|x| x.to_owned()).collect();
 
     
@@ -36,8 +28,12 @@ fn main() {
 
 
 }
+/*
+fn is_valid_file(character: &char) -> bool{
 
-fn is_valid_fs_character(character: &char) -> bool{
-
-    //perform checks on each characters
+    if INVALID_FS_CHARS.contains(*character) {
+        return false
+    }
+    return true
 }
+*/
