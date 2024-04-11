@@ -1,7 +1,8 @@
 use std::{env, fs, process, path::Path};
 use dirby::Config;
 mod file_checks;
-
+mod file_parse;
+mod directory_construction;
 
 fn main() {
     
