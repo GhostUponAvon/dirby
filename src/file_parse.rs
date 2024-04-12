@@ -1,5 +1,5 @@
 use dirby::{Directory, Tree};
-use std::{path::PathBuf, usize};
+use std::{path::{Path, PathBuf}, usize};
 
 
 pub trait Build {
@@ -32,22 +32,51 @@ impl Build for DirectoryPaths {
     fn parse(file: &Vec<String>, root_dir: &str) -> Result<DirectoryPaths, &str> {
         
         let mut paths: DirectoryPaths = DirectoryPaths::new(file.len());
-        let mut root_tree: Directory = Directory {name: root_dir.to_owned(), children: Vec::new(), has_children: false}
+        let mut root_tree: Directory = Directory {name: root_dir.to_owned(), children: Vec::new(), has_children: false};
 
-        let mut current_node:  Directory = root_tree;
-        let mut previous_node: Directory;
+        let mut line_window: Vec<Directory> = vec![root_tree];
+
         let mut current_depth: String = "".to_owned();
+
         for line in file { 
 
+            let current_node: &mut Directory = &mut line_window[line_window.len()-1];
+
+            //forward
             if line[current_depth.len()..].contains("/") {
                 current_depth += "/";
                 let mut new_node: Directory = Directory {name: line[current_depth.len()..].to_string(), children: Vec::new(), has_children: false};
                 current_node.has_children = true;
                 current_node.add(new_node);
-                previous_node = current_node;
-                current_node = new_node;
+                line_window.push(new_node);
             } 
 
+            //hold
+                
+            else if !line[current_depth.len()..].contains("/") {
+                let mut path: PathBuf = PathBuf::new();
+
+                if line_window.len() == 1 {
+                    path.push(&line_window[0].name.to_owned());
+                    path.push(line[current_depth.len()..].to_string());
+                    paths.paths.push(path);
+                } 
+                for dir in line_window {
+                    //if the Vector is more than one entry long go through it recursivly.
+                }
+            }
+
+            //backwards
+            else if true {
+                
+            } else {
+
+            }
+
+            //add handler for if the next line does not move forward but stays put
+
+            //add handler to generate path variable entry and move backwards in the lline windows variable when the next lien moves backwards.
+            
             //continue here and add handler for when there isn't a new sub node
 
             
