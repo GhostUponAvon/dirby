@@ -4,27 +4,23 @@ pub struct Config {
     pub input_file: String,
     pub ouput_dir: String,
 }
-trait Tree {
+pub trait Tree {
     fn has_children(&self) -> Result<usize, &str>;
     fn get_children(&self) -> &Vec<Directory>;
-    fn add(&mut self, obj: Directory) -> Result<bool, bool>; //maybe change the return type
+    fn add(&mut self, node: Directory) -> Result<bool, bool>; //maybe change the return type
 }
 ///Object representing a filesystem folder
 pub struct Directory {
-    name: String,
-    children: Vec<Directory>,
-    has_children: bool,
+    pub name: String,
+    pub children: Vec<Directory>,
+    pub has_children: bool,
 }
 
 ///Object representing the directory the program was called inside.
 ///All child directories will be made inside of this directory
-pub struct RootDirectory {
-    name: String,
-    children: Vec<Directory>,
-    has_children: bool,
-}
 
-impl Tree for RootDirectory {
+
+impl Tree for Directory {
     fn get_children(&self) -> &Vec<Directory> {
         return &self.children
     }
@@ -37,8 +33,8 @@ impl Tree for RootDirectory {
         }
     }
 
-    fn add(&mut self, obj: Directory) -> Result<bool, bool> {
-        self.children.push(obj);
+    fn add(&mut self, node: Directory) -> Result<bool, bool> {
+        self.children.push(node);
         Ok(true)
     }
 

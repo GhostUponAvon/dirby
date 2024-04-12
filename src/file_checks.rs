@@ -17,8 +17,6 @@ pub fn is_valid_file(file: &String) -> bool{
     true
 }
 
-    
-
 fn is_valid_fs_char(character: &char) -> bool {
     
     if INVALID_FS_CHARS.contains(*character) {
@@ -29,4 +27,5 @@ fn is_valid_fs_char(character: &char) -> bool {
 }
 
 //NOTE: add option to log any errors found in the file to a file.
+//NOTE: add checks for symbols that are not aloud to be in certain parts of the file.
 
