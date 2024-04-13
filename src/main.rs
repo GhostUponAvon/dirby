@@ -1,5 +1,5 @@
-use std::{env, fs, process, path::Path};
-use dirby::{Config};
+use std::{env, fs, process};
+use dirby::Config;
 use file_parse::{Build, DirectoryPaths};
 mod file_checks;
 mod file_parse;
@@ -15,18 +15,23 @@ fn main() {
 
     //read input file.
     let file_lines: String = fs::read_to_string(config.input_file).expect("Cannot find the specified file. Please check the file name and path.");
-    
 
+    /*
     if !file_checks::is_valid_file(&file_lines) {
         process::exit(1);
-    }
+    }*/
 
     
     let file_lines: Vec<String> = file_lines.split('\n').map(|x| x.to_owned()).collect();
 
-    let dir_paths: DirectoryPaths = DirectoryPaths::parse(&file_lines).unwrap();
+    let file_lines = file_lines.iter().map(|x| x.trim().to_owned()).collect();
 
-    //build the directory here
+    let dir_paths: DirectoryPaths = DirectoryPaths::parse(&file_lines, &config.ouput_dir).unwrap();
+
+    /*
+    for x in dir_paths.get_paths() {
+        println!("{}", x.to_str().unwrap());
+    } */
 
 
 

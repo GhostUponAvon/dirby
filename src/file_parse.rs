@@ -1,76 +1,106 @@
-use dirby::{Directory, Tree};
-use std::{path::{Path, PathBuf}, usize};
+use std::{path::PathBuf, usize};
 
 
 pub trait Build {
     fn new(size: usize) -> DirectoryPaths;
-    fn parse(file: &Vec<String>, root_dir: &str) -> Result<DirectoryPaths, &str>;
-    fn length(&self) -> usize;
+    fn parse<'a>(file: &'a Vec<String>, root_dir: &'a str) -> Result<DirectoryPaths, &'a str>;
     fn get_paths(&self) -> Vec<PathBuf>;
 
     //may add functionality to return it as a Vector of type String.
 }
+#[derive(Debug)]
 pub struct DirectoryPaths {
-    length: usize,
     paths: Vec<PathBuf>
 }
 
 impl Build for DirectoryPaths {
     
     fn new(size: usize) -> DirectoryPaths {
-        DirectoryPaths {length: 0, paths: Vec::with_capacity(size)}
-    }
-    
-    fn length(&self) -> usize {
-        return self.length.clone();
+        DirectoryPaths {paths: Vec::with_capacity(size)}
     }
 
     fn get_paths(&self) -> Vec<PathBuf> {
         return self.paths.clone()
     }
 
-    fn parse(file: &Vec<String>, root_dir: &str) -> Result<DirectoryPaths, &str> {
+    fn parse<'a>(file: &'a Vec<String>, root_dir: &'a str) -> Result<DirectoryPaths, &'a str> {
         
         let mut paths: DirectoryPaths = DirectoryPaths::new(file.len());
-        let mut root_tree: Directory = Directory {name: root_dir.to_owned(), children: Vec::new(), has_children: false};
+        let mut line_window: Vec<String> = vec![root_dir.to_owned()];
 
-        let mut line_window: Vec<Directory> = vec![root_tree];
-
-        let mut current_depth: String = "".to_owned();
+        let mut current_depth: usize = 0;
 
         for line in file { 
-
-            let current_node: &mut Directory = &mut line_window[line_window.len()-1];
-
+            //println!("{}", line);
             //forward
-            if line[current_depth.len()..].contains("/") {
-                current_depth += "/";
-                let mut new_node: Directory = Directory {name: line[current_depth.len()..].to_string(), children: Vec::new(), has_children: false};
-                current_node.has_children = true;
-                current_node.add(new_node);
+            
+            if line[current_depth..].contains("/") {
+                println!("{} was -> forward", line);
+                current_depth += 1;
+                let new_node: String = line[current_depth..].to_string();
+                //current_node.has_children = true;
+                //current_node.add(new_node);
                 line_window.push(new_node);
             } 
 
             //hold
-                
-            else if !line[current_depth.len()..].contains("/") {
+            else if !line[current_depth..].contains("/") {
+                println!("{} was -> hold", &line);
                 let mut path: PathBuf = PathBuf::new();
 
-                if line_window.len() == 1 {
-                    path.push(&line_window[0].name.to_owned());
-                    path.push(line[current_depth.len()..].to_string());
+                if false/*line_window.len() == 1*/ {
+                    path.push(&line_window[0].to_owned());
+                    path.push(&line[current_depth..].to_string());
                     paths.paths.push(path);
-                } 
-                for dir in line_window {
-                    //if the Vector is more than one entry long go through it recursivly.
+                } else {
+                    for dir in &line_window {
+                        path.push(dir.to_owned());
+                    
+                        
+                        //if the Vector is more than one entry long go through it recursivly.
+                    }
+                    path.push(&line[current_depth..].to_string());
+                    paths.paths.push(path);
                 }
             }
 
             //backwards
-            else if true {
-                
-            } else {
+            else if line.contains("/") {
+                println!("{} was -> backwards", line);
 
+                let mut path: PathBuf = PathBuf::new();
+                
+                
+                let mut reverse_depth: usize = 0;
+                
+                //determine new depth
+                for char in line.chars() {
+                    if char == '/' {
+                        reverse_depth += 1;
+                    }
+                }
+
+                
+                //create entry for previous line
+                for dir in &line_window {
+                    path.push(dir.to_owned());
+                
+                }
+                path.push(line[reverse_depth..].to_string());
+                paths.paths.push(path);
+
+
+
+                //remove old names from line window since we are reversing our depth
+                for _i in 0..current_depth-reverse_depth {
+                    line_window.pop();
+                }
+
+                // set new depth values
+                current_depth = current_depth-reverse_depth
+
+            } else {
+                return Err("failed to parse file")
             }
 
             //add handler for if the next line does not move forward but stays put
@@ -83,8 +113,26 @@ impl Build for DirectoryPaths {
             //delegate job to a function responsible for building the directory tree.
         }
         
-    
-    todo!()
+    dbg!(&paths);
+    Ok(paths)
     }
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn file_parse_expected_output() {
+        let root = "test";
+        let file = vec!["file".to_owned(), "file 2".to_owned(), "/file 3".to_owned(), "//file 4".to_owned(), "file 5".to_owned()];
+
+        let var = DirectoryPaths::parse(&file, root).unwrap();
+
+        for x in var.get_paths() {
+            println!("{}", x.to_str().unwrap());
+        }
+        assert!(true);
+    }
+}
