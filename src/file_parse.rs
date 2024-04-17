@@ -24,7 +24,41 @@ impl Build for DirectoryPaths {
     }
 
     fn parse<'a>(file: &'a Vec<String>, root_dir: &'a str) -> Result<DirectoryPaths, &'a str> {
-        
+       let mut paths: DirectoryPaths = DirectoryPaths::new(file.len());
+       let mut current_path: PathBuf = PathBuf::new();
+       let mut current_depth: usize = 0;
+
+       for line in file {
+           //check depth of the line!()
+           //
+           //determine based on depth to move forwards/hold/backwards
+           //
+           //
+
+           //forward
+           {
+               current_path.push(/*the unadulterated name of the file path element*/);
+               //determine if anything else needs to happen
+           }
+
+           //hold
+           {
+               paths.paths.push(current_path);
+               current_path.pop();
+               current_path.push(/*the unadulterated name of the file path element*/)
+           }
+
+           //backwards
+           {
+               //push the current file path to the paths variable
+               //
+               //determine using the current depth how many times to pop the current_path variable
+               //
+               //push the line variable to the current_path variable
+           }
+       }
+
+        /* 
         let mut paths: DirectoryPaths = DirectoryPaths::new(file.len());
         let mut line_window: Vec<String> = vec![root_dir.to_owned()];
 
@@ -113,7 +147,7 @@ impl Build for DirectoryPaths {
             //delegate job to a function responsible for building the directory tree.
         }
         
-    dbg!(&paths);
+    dbg!(&paths);*/
     Ok(paths)
     }
 }
