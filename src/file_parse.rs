@@ -25,38 +25,59 @@ impl Build for DirectoryPaths {
 
     fn parse<'a>(file: &'a Vec<String>, root_dir: &'a str) -> Result<DirectoryPaths, &'a str> {
        let mut paths: DirectoryPaths = DirectoryPaths::new(file.len());
-       let mut current_path: PathBuf = PathBuf::new();
+       let mut current_path: PathBuf = PathBuf::new(); current_path.push(root_dir.to_owned());
        let mut current_depth: usize = 0;
 
+       //remove the last element of the file variable and render it immutable.
+       let mut file = file.clone(); file.pop(); let file = file;
+
+
        for line in file {
+           println!("______________________\n");
+           println!("the text is:{}", line);
            //check depth of the line!()
            //
            //determine based on depth to move forwards/hold/backwards
            //
-           //
-
-           //forward
-           {
-               current_path.push(/*the unadulterated name of the file path element*/);
-               //determine if anything else needs to happen
+           let mut new_depth: usize = 0;
+           for chr in line.chars() {
+               if chr == '/' {
+                   new_depth += 1;
+               }else {
+                   break;
+               }
            }
 
-           //hold
-           {
-               paths.paths.push(current_path);
+           //If depth is 0 #this is temporary and should be changed in future
+           if new_depth == 0 && current_depth == 0{
+              current_path.push(line.to_owned()); 
+           }
+           //forward
+           if new_depth > current_depth {
+               current_path.push(line[new_depth..].to_owned()/*the unadulterated name of the file path element*/);
+               //determine if anything else needs to happen
+           }
+           dbg!(&new_depth);
+           if current_depth == new_depth {
+               paths.paths.push(current_path.clone());
                current_path.pop();
-               current_path.push(/*the unadulterated name of the file path element*/)
+               current_path.push(line[new_depth..].to_owned()/*the unadulterated name of the file path element*/)
            }
 
            //backwards
-           {
+           if new_depth < current_depth {
+               paths.paths.push(current_path.clone());
+               for _ in 0..(current_depth-new_depth) {
+                   current_path.pop();
+               }
+               current_path.push(line[new_depth..].to_owned());
                //push the current file path to the paths variable
                //
-               //determine using the current depth how many times to pop the current_path variable
-               //
-               //push the line variable to the current_path variable
+               //determine using the current depth how many times to pop 
            }
+           current_depth = new_depth;
        }
+        paths.paths.push(current_path.clone());
 
         /* 
         let mut paths: DirectoryPaths = DirectoryPaths::new(file.len());

@@ -28,10 +28,10 @@ fn main() {
 
     let dir_paths: DirectoryPaths = DirectoryPaths::parse(&file_lines, &config.ouput_dir).unwrap();
 
-    /*
+    
     for x in dir_paths.get_paths() {
         println!("{}", x.to_str().unwrap());
-    } */
+    }
 
 
 
