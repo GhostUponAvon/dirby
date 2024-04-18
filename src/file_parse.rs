@@ -26,20 +26,18 @@ impl Build for DirectoryPaths {
     fn parse<'a>(file: &'a Vec<String>, root_dir: &'a str) -> Result<DirectoryPaths, &'a str> {
        let mut paths: DirectoryPaths = DirectoryPaths::new(file.len());
        let mut current_path: PathBuf = PathBuf::new(); current_path.push(root_dir.to_owned());
-       let mut current_depth: usize = 0;
+       let mut current_depth: isize = -1;
 
-       //remove the last element of the file variable and render it immutable.
+       //remove the last element of the file variable and render file variable immutable.
        let mut file = file.clone(); file.pop(); let file = file;
 
 
        for line in file {
-           println!("______________________\n");
-           println!("the text is:{}", line);
-           //check depth of the line!()
+           //check depth of the line
            //
            //determine based on depth to move forwards/hold/backwards
            //
-           let mut new_depth: usize = 0;
+           let mut new_depth: isize = 0;
            for chr in line.chars() {
                if chr == '/' {
                    new_depth += 1;
@@ -48,146 +46,34 @@ impl Build for DirectoryPaths {
                }
            }
 
-           //If depth is 0 #this is temporary and should be changed in future
-           if new_depth == 0 && current_depth == 0{
-              current_path.push(line.to_owned()); 
-           }
            //forward
            if new_depth > current_depth {
-               current_path.push(line[new_depth..].to_owned()/*the unadulterated name of the file path element*/);
+               current_path.push(line[new_depth as usize..].to_owned());
                //determine if anything else needs to happen
            }
-           dbg!(&new_depth);
-           if current_depth == new_depth {
+
+           //hold
+           else if current_depth == new_depth {
                paths.paths.push(current_path.clone());
                current_path.pop();
-               current_path.push(line[new_depth..].to_owned()/*the unadulterated name of the file path element*/)
+               current_path.push(line[new_depth as usize..].to_owned());
            }
 
            //backwards
-           if new_depth < current_depth {
+           else if new_depth < current_depth {
+               //push the current file path to the paths variable
                paths.paths.push(current_path.clone());
-               for _ in 0..(current_depth-new_depth) {
+
+               //determine using the current depth how many times to pop 
+               for _ in 0..(current_depth-new_depth+1) {
                    current_path.pop();
                }
-               current_path.push(line[new_depth..].to_owned());
-               //push the current file path to the paths variable
-               //
-               //determine using the current depth how many times to pop 
+               current_path.push(line[new_depth as usize..].to_owned());
            }
            current_depth = new_depth;
        }
         paths.paths.push(current_path.clone());
 
-        /* 
-        let mut paths: DirectoryPaths = DirectoryPaths::new(file.len());
-        let mut line_window: Vec<String> = vec![root_dir.to_owned()];
-
-        let mut current_depth: usize = 0;
-
-        for line in file { 
-            //println!("{}", line);
-            //forward
-            
-            if line[current_depth..].contains("/") {
-                println!("{} was -> forward", line);
-                current_depth += 1;
-                let new_node: String = line[current_depth..].to_string();
-                //current_node.has_children = true;
-                //current_node.add(new_node);
-                line_window.push(new_node);
-            } 
-
-            //hold
-            else if !line[current_depth..].contains("/") {
-                println!("{} was -> hold", &line);
-                let mut path: PathBuf = PathBuf::new();
-
-                if false/*line_window.len() == 1*/ {
-                    path.push(&line_window[0].to_owned());
-                    path.push(&line[current_depth..].to_string());
-                    paths.paths.push(path);
-                } else {
-                    for dir in &line_window {
-                        path.push(dir.to_owned());
-                    
-                        
-                        //if the Vector is more than one entry long go through it recursivly.
-                    }
-                    path.push(&line[current_depth..].to_string());
-                    paths.paths.push(path);
-                }
-            }
-
-            //backwards
-            else if line.contains("/") {
-                println!("{} was -> backwards", line);
-
-                let mut path: PathBuf = PathBuf::new();
-                
-                
-                let mut reverse_depth: usize = 0;
-                
-                //determine new depth
-                for char in line.chars() {
-                    if char == '/' {
-                        reverse_depth += 1;
-                    }
-                }
-
-                
-                //create entry for previous line
-                for dir in &line_window {
-                    path.push(dir.to_owned());
-                
-                }
-                path.push(line[reverse_depth..].to_string());
-                paths.paths.push(path);
-
-
-
-                //remove old names from line window since we are reversing our depth
-                for _i in 0..current_depth-reverse_depth {
-                    line_window.pop();
-                }
-
-                // set new depth values
-                current_depth = current_depth-reverse_depth
-
-            } else {
-                return Err("failed to parse file")
-            }
-
-            //add handler for if the next line does not move forward but stays put
-
-            //add handler to generate path variable entry and move backwards in the lline windows variable when the next lien moves backwards.
-            
-            //continue here and add handler for when there isn't a new sub node
-
-            
-            //delegate job to a function responsible for building the directory tree.
-        }
-        
-    dbg!(&paths);*/
     Ok(paths)
-    }
-}
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn file_parse_expected_output() {
-        let root = "test";
-        let file = vec!["file".to_owned(), "file 2".to_owned(), "/file 3".to_owned(), "//file 4".to_owned(), "file 5".to_owned()];
-
-        let var = DirectoryPaths::parse(&file, root).unwrap();
-
-        for x in var.get_paths() {
-            println!("{}", x.to_str().unwrap());
-        }
-        assert!(true);
     }
 }

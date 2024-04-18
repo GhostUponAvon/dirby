@@ -1,4 +1,4 @@
-use std::{env, fs, process};
+use std::{env, fs};
 use dirby::Config;
 use file_parse::{Build, DirectoryPaths};
 mod file_checks;
