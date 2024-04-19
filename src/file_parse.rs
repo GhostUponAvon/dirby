@@ -49,7 +49,6 @@ impl Build for DirectoryPaths {
            //forward
            if new_depth > current_depth {
                current_path.push(line[new_depth as usize..].to_owned());
-               //determine if anything else needs to happen
            }
 
            //hold
@@ -64,7 +63,7 @@ impl Build for DirectoryPaths {
                //push the current file path to the paths variable
                paths.paths.push(current_path.clone());
 
-               //determine using the current depth how many times to pop 
+               //determine using the current depth how many times to pop the current_path variable
                for _ in 0..(current_depth-new_depth+1) {
                    current_path.pop();
                }

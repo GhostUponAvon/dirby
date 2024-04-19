@@ -2,8 +2,21 @@ use std::env;
 pub struct Config {
     pub execution_path: String,
     pub input_file: String,
-    pub ouput_dir: String,
+    pub output_dir: String,
 }
+
+impl Config {
+    pub fn new(args: &[String]) -> Result<Config, &str> {
+        
+        let input_file: String = args[1].clone();
+        let output_dir: String = args[2].clone();
+        let execution_path: String = env::current_dir().unwrap().display().to_string();
+        
+        Ok(Config {input_file, output_dir, execution_path})
+    }
+}
+//Code That can in future be used to make the program more abstract and extensible
+/*
 pub trait Tree {
     fn has_children(&self) -> Result<usize, &str>;
     fn get_children(&self) -> &Vec<Directory>;
@@ -38,15 +51,5 @@ impl Tree for Directory {
         Ok(true)
     }
 
-    }
-
-impl Config {
-    pub fn new(args: &[String]) -> Result<Config, &str> {
-        
-        let input_file: String = args[1].clone();
-        let output_dir: String = args[2].clone();
-        let execution_path: String = env::current_dir().unwrap().display().to_string();
-        
-        Ok(Config {input_file: input_file, ouput_dir: output_dir, execution_path: execution_path})
-    }
-} 
+    
+}*/ 
