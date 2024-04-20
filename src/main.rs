@@ -8,6 +8,7 @@ mod directory_construction;
 fn main() {
     
     //collect environment arguments
+    //TODO! check the parsed root directory for illegal characters
     let args: Vec<String> = env::args().collect();
 
     let config: Config = Config::new(&args).unwrap();
