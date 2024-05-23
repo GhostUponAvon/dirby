@@ -29,11 +29,6 @@ impl Build for DirectoryPaths {
         current_path.push(root_dir);
         let mut current_depth: isize = -1;
 
-        //remove the last element of the file variable and render file variable immutable.
-        let mut file = file.to_owned();
-        file.pop();
-        let file = file;
-
         for line in file {
             //check depth of the line
             //
