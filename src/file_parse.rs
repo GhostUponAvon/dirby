@@ -1,4 +1,4 @@
-use std::{path::PathBuf, usize};
+use std::{cmp::Ordering, path::PathBuf, usize};
 
 pub trait Build {
     fn new(size: usize) -> Self;
@@ -44,7 +44,7 @@ impl Build for DirectoryPaths {
             }
 
             match new_depth.cmp(&current_depth) {
-                std::cmp::Ordering::Less => {
+                Ordering::Less => {
                     //push the current file path to the paths variable
                     paths.paths.push(current_path.clone());
 
@@ -54,12 +54,12 @@ impl Build for DirectoryPaths {
                     }
                     current_path.push(&line[new_depth as usize..]);
                 }
-                std::cmp::Ordering::Equal => {
+                Ordering::Equal => {
                     paths.paths.push(current_path.clone());
                     current_path.pop();
                     current_path.push(&line[new_depth as usize..]);
                 }
-                std::cmp::Ordering::Greater => {
+                Ordering::Greater => {
                     current_path.push(&line[new_depth as usize..]);
                 }
             }
