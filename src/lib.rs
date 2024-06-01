@@ -7,12 +7,15 @@ pub struct Config {
 
 impl Config {
     pub fn new(args: &[String]) -> Result<Config, &str> {
-        
         let input_file: String = args[1].clone();
         let output_dir: String = args[2].clone();
         let execution_path: String = env::current_dir().unwrap().display().to_string();
-        
-        Ok(Config {input_file, output_dir, execution_path})
+
+        Ok(Config {
+            input_file,
+            output_dir,
+            execution_path,
+        })
     }
 }
 //Code That can in future be used to make the program more abstract and extensible
@@ -51,5 +54,5 @@ impl Tree for Directory {
         Ok(true)
     }
 
-    
-}*/ 
+
+}*/
